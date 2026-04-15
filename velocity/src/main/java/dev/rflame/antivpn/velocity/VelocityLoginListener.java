@@ -46,9 +46,8 @@ public class VelocityLoginListener {
             plugin.incrementBlocked();
 
             String kickMessage = plugin.buildKickMessage(result, name);
-            event.setResult(
-                LoginEvent.ColumnarResult.forbidden(
-                    LegacyComponentSerializer.legacySection().deserialize(kickMessage)));
+            event.setResult(LoginEvent.ColumnarResult.denied(
+                LegacyComponentSerializer.legacySection().deserialize(kickMessage)));
 
             String blockType = result.isVPN() ? "VPN" : result.isProxy() ? "PROXY" : "TOR";
             plugin.getLogger().warn("[RFlameAntiVPN] BLOCKED: " + name + " (" + ip + ") - " + blockType);

@@ -1,7 +1,6 @@
 package dev.rflame.antivpn.velocity;
 
 import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import dev.rflame.antivpn.common.MessageBuilder;
@@ -17,7 +16,7 @@ public class VelocityRFlameCommand implements Command {
     }
 
     @Override
-    public void execute(CommandMeta meta, CommandSource source, String[] args) {
+    public void execute(CommandSource source, String[] args) {
         if (!source.hasPermission(plugin.getConfig().getAdminPermission())) {
             source.sendMessage(Component.text("No permission!").color(NamedTextColor.RED));
             return;
@@ -110,7 +109,7 @@ public class VelocityRFlameCommand implements Command {
                 source.sendMessage(Component.text("Invalid type").color(NamedTextColor.RED));
                 return;
             }
-            source.sendMessage(Component.text("Added to whitelist: " + target).color(NamedTextColor.GREEN));
+            source.sendMessage(Component.text("Added: " + target).color(NamedTextColor.GREEN));
         } else if (action.equalsIgnoreCase("remove")) {
             if (type.equalsIgnoreCase("player")) {
                 plugin.getWhitelist().removePlayer(target);
@@ -122,7 +121,7 @@ public class VelocityRFlameCommand implements Command {
                 source.sendMessage(Component.text("Invalid type").color(NamedTextColor.RED));
                 return;
             }
-            source.sendMessage(Component.text("Removed from whitelist: " + target).color(NamedTextColor.RED));
+            source.sendMessage(Component.text("Removed: " + target).color(NamedTextColor.RED));
         }
     }
 
