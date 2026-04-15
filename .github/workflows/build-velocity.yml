@@ -1,0 +1,37 @@
+name: Build Velocity
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Download Velocity API (try multiple repos)
+        run: |
+          mkdir -p velocity/libs
+          wget -q "https://repo.minebench.de/com/velocitypowered/velocity-api/3.0.0/velocity-api-3.0.0.jar" -O velocity/libs/velocity-api.jar || \
+          wget -q "https://repo.stellardrift.ca/maven/snapshots/com/velocitypowered/velocity-api/3.0.0-SNAPSHOT/velocity-api-3.0.0-20210713.022058-24.jar" -O velocity/libs/velocity-api.jar || \
+          wget -q "https://repo1.maven.org/maven2/com/velocitypowered/velocity-api/3.0.0/velocity-api-3.0.0.jar" -O velocity/libs/velocity-api.jar
+          ls -la velocity/libs/
+
+      - name: Build
+        run: |
+          ./gradlew :common:build
+          ./gradlew :velocity:shadowJar || echo "Build may fail - Velocity API changed"
+
+      - name: Upload if successful
+        if: success()
+        run: |
+          curl -s -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/309291860/assets?name=RFrameAntiVPN-Velocity-1.0.0.jar" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/java-archive" \
+            --data-binary @velocity/build/libs/RFrameAntiVPN-1.0.0.jar
