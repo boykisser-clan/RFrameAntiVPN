@@ -1,12 +1,14 @@
 package dev.rflame.antivpn.velocity;
 
-import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.command.Command;
+import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import dev.rflame.antivpn.common.MessageBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-public class VelocityRFlameCommand extends SimpleCommand {
+public class VelocityRFlameCommand implements Command {
 
     private final RFlameAntiVPNVelocity plugin;
 
@@ -15,10 +17,7 @@ public class VelocityRFlameCommand extends SimpleCommand {
     }
 
     @Override
-    public void execute(Invocation invocation) {
-        com.velocitypowered.api.command.CommandSource source = invocation.source();
-        String[] args = invocation.arguments();
-
+    public void execute(CommandMeta meta, CommandSource source, String[] args) {
         if (!source.hasPermission(plugin.getConfig().getAdminPermission())) {
             source.sendMessage(Component.text("No permission!").color(NamedTextColor.RED));
             return;
@@ -35,17 +34,14 @@ public class VelocityRFlameCommand extends SimpleCommand {
                     source.sendMessage(Component.text("Usage: /rvpn check <player|ip>").color(NamedTextColor.RED));
                     return;
                 }
-                String target = args[1];
-                handleCheck(source, target);
+                handleCheck(source, args[1]);
                 break;
             case "whitelist":
                 if (args.length < 3) {
                     source.sendMessage(Component.text("Usage: /rvpn whitelist add|remove <player|ip|cidr>").color(NamedTextColor.RED));
                     return;
                 }
-                String action = args[1];
-                String type = args[2];
-                handleWhitelist(source, action, type, args.length > 3 ? args[3] : "");
+                handleWhitelist(source, args[1], args[2], args.length > 3 ? args[3] : "");
                 break;
             case "list":
                 handleWhitelistList(source);
@@ -55,8 +51,7 @@ public class VelocityRFlameCommand extends SimpleCommand {
                     source.sendMessage(Component.text("Usage: /rvpn cache clear|stats").color(NamedTextColor.RED));
                     return;
                 }
-                String cacheAction = args[1];
-                handleCache(source, cacheAction);
+                handleCache(source, args[1]);
                 break;
             case "reload":
                 plugin.reload();
@@ -70,17 +65,17 @@ public class VelocityRFlameCommand extends SimpleCommand {
         }
     }
 
-    private void sendHelp(com.velocitypowered.api.command.CommandSource source) {
+    private void sendHelp(CommandSource source) {
         source.sendMessage(Component.text("[RFrameAntiVPN] Help").color(NamedTextColor.GOLD));
-        source.sendMessage(Component.text("/rvpn check <player|ip> - Check player IP"));
-        source.sendMessage(Component.text("/rvpn whitelist add|remove <target> - Manage whitelist"));
-        source.sendMessage(Component.text("/rvpn whitelist list - Show whitelist"));
-        source.sendMessage(Component.text("/rvpn cache clear|stats - Cache management"));
-        source.sendMessage(Component.text("/rvpn reload - Reload config"));
-        source.sendMessage(Component.text("/rvpn stats - Show statistics"));
+        source.sendMessage(Component.text("/rvpn check <player|ip>"));
+        source.sendMessage(Component.text("/rvpn whitelist add|remove <target>"));
+        source.sendMessage(Component.text("/rvpn whitelist list"));
+        source.sendMessage(Component.text("/rvpn cache clear|stats"));
+        source.sendMessage(Component.text("/rvpn reload"));
+        source.sendMessage(Component.text("/rvpn stats"));
     }
 
-    private void handleCheck(com.velocitypowered.api.command.CommandSource source, String target) {
+    private void handleCheck(CommandSource source, String target) {
         String ip = target;
         if (!target.matches("^\\d{1,3}(\\.\\d{1,3}){3}$")) {
             Player player = plugin.getServer().getPlayer(target).orElse(null);
@@ -98,7 +93,7 @@ public class VelocityRFlameCommand extends SimpleCommand {
         });
     }
 
-    private void handleWhitelist(com.velocitypowered.api.command.CommandSource source, String action, String type, String target) {
+    private void handleWhitelist(CommandSource source, String action, String type, String target) {
         if (target.isEmpty()) {
             source.sendMessage(Component.text("Usage: /rvpn whitelist add|remove <player|ip|cidr>").color(NamedTextColor.RED));
             return;
@@ -112,10 +107,10 @@ public class VelocityRFlameCommand extends SimpleCommand {
             } else if (type.equalsIgnoreCase("cidr")) {
                 plugin.getWhitelist().addIpRange(target);
             } else {
-                source.sendMessage(Component.text("Invalid type. Use: player, ip, or cidr").color(NamedTextColor.RED));
+                source.sendMessage(Component.text("Invalid type").color(NamedTextColor.RED));
                 return;
             }
-            source.sendMessage(Component.text(plugin.getConfig().getMessage("whitelisted").replace("{target}", target)).color(NamedTextColor.GREEN));
+            source.sendMessage(Component.text("Added to whitelist: " + target).color(NamedTextColor.GREEN));
         } else if (action.equalsIgnoreCase("remove")) {
             if (type.equalsIgnoreCase("player")) {
                 plugin.getWhitelist().removePlayer(target);
@@ -124,28 +119,28 @@ public class VelocityRFlameCommand extends SimpleCommand {
             } else if (type.equalsIgnoreCase("cidr")) {
                 plugin.getWhitelist().removeIpRange(target);
             } else {
-                source.sendMessage(Component.text("Invalid type. Use: player, ip, or cidr").color(NamedTextColor.RED));
+                source.sendMessage(Component.text("Invalid type").color(NamedTextColor.RED));
                 return;
             }
-            source.sendMessage(Component.text(plugin.getConfig().getMessage("unwhitelisted").replace("{target}", target)).color(NamedTextColor.RED));
+            source.sendMessage(Component.text("Removed from whitelist: " + target).color(NamedTextColor.RED));
         }
     }
 
-    private void handleWhitelistList(com.velocitypowered.api.command.CommandSource source) {
+    private void handleWhitelistList(CommandSource source) {
         String prefix = plugin.getConfig().getPrefix();
         source.sendMessage(Component.text(MessageBuilder.buildWhitelistList(prefix, plugin.getWhitelist()).replace("§", "")));
     }
 
-    private void handleCache(com.velocitypowered.api.command.CommandSource source, String action) {
+    private void handleCache(CommandSource source, String action) {
         if (action.equalsIgnoreCase("clear")) {
             plugin.getChecker().clearCache();
-            source.sendMessage(Component.text(plugin.getConfig().getMessage("cache-cleared")).color(NamedTextColor.GREEN));
+            source.sendMessage(Component.text("Cache cleared").color(NamedTextColor.GREEN));
         } else if (action.equalsIgnoreCase("stats")) {
             source.sendMessage(Component.text("Cache size: " + plugin.getChecker().getCacheSize()));
         }
     }
 
-    private void handleStats(com.velocitypowered.api.command.CommandSource source) {
+    private void handleStats(CommandSource source) {
         String prefix = plugin.getConfig().getPrefix();
         source.sendMessage(Component.text(MessageBuilder.buildStats(prefix, plugin.getCheckedCount(), plugin.getBlockedCount(), plugin.getChecker().getCacheSize()).replace("§", "")));
     }

@@ -47,7 +47,7 @@ public class VelocityLoginListener {
 
             String kickMessage = plugin.buildKickMessage(result, name);
             event.setResult(
-                com.velocitypowered.api.event.connection.LoginResult.denied(
+                LoginEvent.ColumnarResult.forbidden(
                     LegacyComponentSerializer.legacySection().deserialize(kickMessage)));
 
             String blockType = result.isVPN() ? "VPN" : result.isProxy() ? "PROXY" : "TOR";

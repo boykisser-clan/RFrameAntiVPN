@@ -81,11 +81,7 @@ public class RFlameAntiVPNVelocity {
     }
 
     private void registerCommands() {
-        server.getCommandManager().register(
-            server.getCommandManager().metaBuilder("rflameantivpn")
-                .aliases("rvpn", "antivpn")
-                .build(),
-            new VelocityRFlameCommand(this));
+        server.getCommandManager().register("rflameantivpn", new VelocityRFlameCommand(this), "rvpn", "antivpn");
     }
 
     public ProxyServer getServer() {
