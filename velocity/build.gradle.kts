@@ -7,13 +7,6 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
-    maven("https://repo.minebench.de")
-}
-
-dependencies {
-    compileOnly("com.velocitypowered:velocity-api:3.0.0")
-    annotationProcessor("com.velocitypowered:velocity-api:3.0.0")
-    implementation(project(":common"))
 }
 
 java {
