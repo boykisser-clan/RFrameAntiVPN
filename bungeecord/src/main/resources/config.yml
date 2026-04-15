@@ -1,0 +1,45 @@
+# RFrameAntiVPN Configuration
+# AUTHOR boykisser clan and RIN my team boykisser clan my NAME RIN
+
+api:
+  url: "https://rinantivpn-premium.vercel.app/api/check"
+  key: "PREMIUM-KEY113"
+  timeout: 5
+  fail-open: true
+
+session:
+  cache-minutes: 30
+  max-size: 10000
+
+detection:
+  block-vpn: true
+  block-proxy: true
+  block-tor: true
+
+kick-message:
+  use-default: true
+  custom: ""
+  server-name: "KRUD SMP"
+  discord: "discord.gg/krudsmp"
+
+discord:
+  enabled: false
+  webhook-url: ""
+
+logging:
+  console: true
+  file: true
+  log-file: "logs/rflameantivpn.log"
+
+permissions:
+  bypass: "rflameantivpn.bypass"
+  admin: "rflameantivpn.admin"
+
+messages:
+  prefix: "§8[§cʀꜰʟᴀᴍᴇ§7ᴀɴᴛɪᴠᴘɴ§8]"
+  reloaded: "§aᴄᴏɴꜱɪɢ ʀᴇʟᴏᴀᴅᴇᴅ!"
+  no-permission: "§cɴᴏ ᴘᴇʀᴍɪꜱꜱɪᴏɴ!"
+  player-not-found: "§cᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ!"
+  whitelisted: "§a{target} ᴀᴅᴅᴇᴅ ᴛᴏ ᴡʜɪᴛᴇʟɪꜱᴛ!"
+  unwhitelisted: "§c{target} ʀᴇᴍᴏᴠᴇᴅ ꜰʀᴏᴅ ᴡʜɪᴛᴇʟɪꜱᴛ!"
+  cache-cleared: "§aꜱᴇꜱꜱɪᴏɴ ᴄᴀᴄʜᴇ ᴄʟᴇᴀʀᴇᴅ!"
